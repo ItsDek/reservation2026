@@ -1,14 +1,17 @@
 package be.iccbxl.pid.reservations_springboot.validation;
 
-import be.iccbxl.pid.reservations_springboot.dto.UserRegistrationDto;
+import org.springframework.beans.BeanWrapperImpl;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, UserRegistrationDto> {
+// Object au lieu de UserRegistrationDto : @PasswordMatches est aussi utilisée sur UserProfileDto
+public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, Object> {
     @Override
-    public boolean isValid(UserRegistrationDto dto, ConstraintValidatorContext context) {
-        String pwd = dto.getPassword();
-        String confirm = dto.getConfirmPassword();
+    public boolean isValid(Object dto, ConstraintValidatorContext context) {
+        BeanWrapperImpl wrapper = new BeanWrapperImpl(dto);
+        String pwd = (String) wrapper.getPropertyValue("password");
+        String confirm = (String) wrapper.getPropertyValue("confirmPassword");
 
         // Si les deux champs sont vides, on considère que le mot de passe n'est pas modifié => OK
         if ((pwd == null || pwd.isBlank()) && (confirm == null || confirm.isBlank())) {
